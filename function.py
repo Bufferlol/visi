@@ -22,6 +22,7 @@ api = twitter.Api(consumer_key=config['twitter']['consumer_key'],
 
 translate = YandexTranslate(config['yandex']['token'])
 
+
 async def call(func, msg):
     if func in commands:
         await globals()[func](msg)
@@ -111,8 +112,7 @@ async def check_lvlup(member):
 
 async def checkeq():
     try:
-        api_eq = urllib.request.urlopen("http://pso2emq.flyergo.eu/api/v2/")
-        .read().decode('UTF-8')
+        api_eq = urllib.request.urlopen("http://pso2emq.flyergo.eu/api/v2/").read().decode('UTF-8')
         eq = json.loads(api_eq)
         eq = eq[0]
         eq_time = eq['jst']
@@ -125,8 +125,7 @@ async def checkeq():
             await send('eqalert', '',
                        'In 1 hour the following EQs will start:')
             for line in eq_text:
-                if line.startswith('[In Preparation]') or
-                (count == 1 and count2 == 0):
+                if line.startswith('[In Preparation]') or (count == 1 and count2 == 0):
                     if count == 0:
                         eq_name = line.split(' ', 3)[3].strip()
                         await send('eqalert', 'default', eq_name)
@@ -138,11 +137,8 @@ async def checkeq():
                 elif (line[0:1].isdigit and line[2] == ':'):
                     if not (line[3] == '0' or line[3] == '3'):
                         eq_name = line.split(':')[1].strip()
-                        if (eq_name != '-'
-                            and not eq_name.startswith('[Cooldown]')
-                            and not eq_name[0].isdigit:
-                            eq_mention_temp = 'ship' + line.split(':')[0]
-                            .strip().lower()
+                        if eq_name != '-' and not eq_name.startswith('[Cooldown]') and not eq_name[0].isdigit:
+                            eq_mention_temp = 'ship' + line.split(':')[0].strip().lower()
                             db.d['eqmention'] += eq_mention_temp + ' '
                             await send('eqalert', eq_mention_temp, ': ' +
                                        eq_name)
@@ -173,22 +169,22 @@ async def log(msg):
     with open('log/'+file_name, 'a') as logfile:
         if msg.attachments != []:
             logfile.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' '
-                          +msg.channel.name+' '+msg.author.name + ': '
-                          +msg.content+' '+msg.attachments[0]['url']+'\n')
+                          + msg.channel.name+' '+msg.author.name + ': '
+                          + msg.content+' '+msg.attachments[0]['url']+'\n')
         else:
             logfile.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' '
-                          +msg.channel.name+' '+msg.author.name + ': '
-                          +msg.content+'\n')
+                          + msg.channel.name+' '+msg.author.name + ': '
+                          + msg.content+'\n')
 
     file_name = msg.channel.name + '.txt'
     with open('log/'+file_name, 'a') as logfile:
         if msg.attachments != []:
             logfile.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' '
-                          +msg.author.name + ': ' + msg.content+' '
-                          +msg.attachments[0]['url']+'\n')
+                          + msg.author.name + ': ' + msg.content+' '
+                          + msg.attachments[0]['url']+'\n')
         else:
             logfile.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' '
-                          +msg.author.name + ': ' + msg.content+'\n')
+                          + msg.author.name + ': ' + msg.content+'\n')
 
 
 # CHAT COMMANDS
@@ -198,7 +194,7 @@ async def ship(message):
         if (message.content.split(' ')[1].isdigit):
             server = client.get_server(config['discord']['serverid'])
             ship = discord.utils.get(server.roles, name='ship'
-                                     +message.content.split(' ')[1])
+                                     + message.content.split(' ')[1])
             if (ship is not None):
                 await client.add_roles(message.author, ship)
                 await send('bot', '', message.author.mention
@@ -254,7 +250,7 @@ async def noeqa(message):
         newbie = discord.utils.get(server.roles, name='noeqa')
         await client.add_roles(message.author, newbie)
         await client.send_message(message.channel, message.author.mention
-                                  +' you will no longer get EQ Alerts.')
+                                  + ' you will no longer get EQ Alerts.')
     except:
         await client.send_message(message.channel,
                                   'ERROR: wrong command syntax')
@@ -264,8 +260,7 @@ async def debug(message):
         server = client.get_server(config['discord']['serverid'])
         for member in server.members:
             if (member.game is not None):
-                if (member.game.name == 'Phantasy Star Online 2'
-                    and str(member.status) == 'online'):
+                if (member.game.name == 'Phantasy Star Online 2' and str(member.status) == 'online'):
                         await send('staff', '', member.name
                                    + ' is playing pso2 - okay')
                 else:
