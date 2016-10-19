@@ -1,11 +1,12 @@
 import discord
 import twitter
-from yandex_translate import YandexTranslate
 import json
 import database as db
 import sys
 import urllib.request
+
 from time import gmtime, strftime
+from yandex_translate import YandexTranslate
 
 global client
 global task
@@ -47,20 +48,20 @@ async def twitter():
             trans = translate.translate(statuses[0].text, 'en')
             post = '*@sega_pso2 just tweeted:* \n\n'
             post += statuses[0].text + '\n'
-            await send('twitter', '', post)
+            await send('twitter', post)
             post = '\n*translation:* \n\n'
             post += trans['text'][0] + '\n'
-            await send('twitter', '', post)
+            await send('twitter', post)
     except:
         print(sys.exc_info()[0])
 
 
-async def send(chname, mention, msg):
+async def send(chname, msg, mention = None):
     await client.wait_until_ready()
     role_m = ''
     server = client.get_server(config['discord']['serverid'])
     channel = discord.utils.get(server.channels, name=chname)
-    if (mention != ''):
+    if (mention != None):
         roles = mention.strip().split(' ')
         for role in roles:
             if (role == 'default'):
@@ -94,26 +95,26 @@ async def check_lvlup(member):
 
     if (db.d[member.id+'_p'] >= 1680 and member.top_role == newbie):
         await client.add_roles(member, rookie)
-        await send('bot', '', member.mention +
+        await send('bot', member.mention +
                    ' Congratulation, you are no longer a Newbie :^)')
     if (db.d[member.id+'_p'] >= 6300 and member.top_role == rookie):
         await client.add_roles(member, member_r)
-        await send('bot', '', member.mention +
+        await send('bot', member.mention +
                    ' You leveled up to Member!! ONE OF US ONE OF US')
     if (db.d[member.id+'_p'] >= 16800 and member.top_role == member_r):
         await client.add_roles(member, veteran)
-        await send('bot', '', member.mention +
+        await send('bot', member.mention +
                    ' AYY Veteran already!! GRATZ :)')
     if (db.d[member.id+'_p'] >= 50400 and member.top_role == veteran):
         await client.add_roles(member, master)
-        await send('bot', '', member.mention +
+        await send('bot', member.mention +
                    ' HOLY SHIT!! A NEW MASTER HAS RISEN! WOOP WOOP PARTY HARD')
 
 
 async def checkeq():
     try:
-        api_eq = urllib.request.urlopen("http://pso2emq.flyergo.eu/api/v2/").read().decode('UTF-8')
-        eq = json.loads(api_eq)
+        api_eq = urllib.request.urlopen("http://pso2emq.flyergo.eu/api/v2/")
+        eq = json.loads(api_eq.read().decode('UTF-8'))
         eq = eq[0]
         eq_time = eq['jst']
         eq_text = eq['text'].splitlines()
@@ -122,30 +123,30 @@ async def checkeq():
             db.d['eq'] = eq_time
             count = 0
             count2 = 0
-            await send('eqalert', '',
+            await send('eqalert',
                        'In 1 hour the following EQs will start:')
             for line in eq_text:
-                if line.startswith('[In Preparation]') or (count == 1 and count2 == 0):
+                if line.startswith('[In Prep') or (count == 1 and count2 == 0):
                     if count == 0:
                         eq_name = line.split(' ', 3)[3].strip()
-                        await send('eqalert', 'default', eq_name)
+                        await send('eqalert', eq_name, 'default')
                         db.d['eqmention'] += 'default '
                     elif count == 1:
                         eq_name = line.strip()
-                        await send('eqalert', 'default', eq_name)
+                        await send('eqalert', eq_name, 'default')
                     count = 1
                 elif (line[0:1].isdigit and line[2] == ':'):
                     if not (line[3] == '0' or line[3] == '3'):
                         eq_name = line.split(':')[1].strip()
-                        if eq_name != '-' and not eq_name.startswith('[Cooldown]') and not eq_name[0].isdigit:
+                        if (eq_name != '-' and not eq_name.startswith('[Cooldown]') and not eq_name[0].isdigit()):
                             eq_mention_temp = 'ship' + line.split(':')[0].strip().lower()
                             db.d['eqmention'] += eq_mention_temp + ' '
-                            await send('eqalert', eq_mention_temp, ': ' +
-                                       eq_name)
+                            await send('eqalert', ': ' +
+                                       eq_name, eq_mention_temp)
                             count = 1
                             count2 = 1
             if (count == 0):
-                await send('eqalert', '', 'None :(')
+                await send('eqalert', 'None :(')
     except:
         print(sys.exc_info()[0])
 
@@ -197,7 +198,7 @@ async def ship(message):
                                      + message.content.split(' ')[1])
             if (ship is not None):
                 await client.add_roles(message.author, ship)
-                await send('bot', '', message.author.mention
+                await send('bot', message.author.mention
                            + ' you are now on '
                            + 'ship'+message.content.split(' ')[1] + '!')
     except:
@@ -212,32 +213,32 @@ async def points(message):
                                            name=message.content.split(' ')[1])
                 if len(message.content.split(' ')) == 2:
                     if member.id+'_p' in db.d:
-                        await send('bot', '', member.name + ' has '
+                        await send('bot', member.name + ' has '
                                    + str(db.d[member.id + '_p']) + ' points!')
                     else:
                         db.d[member.id + '_p'] = 0
                         await sync_db()
-                        await send('bot', '', member.name + ' has '
+                        await send('bot', member.name + ' has '
                                    + str(db.d[member.id + '_p']) + ' points!')
                 elif len(message.content.split(' ')) == 3:
                     if member.id + '_p' in db.d:
                         n = int(message.content.split(' ')[2])
                         await give_points(member, n)
-                        await send('bot', '', member.name + ' has '
+                        await send('bot', member.name + ' has '
                                    + str(db.d[member.id + '_p'])
                                    + ' points now!')
                     else:
                         db.d[member.id + '_p'] = 0
                         n = int(message.content.split(' ')[2])
                         await give_points(member, n)
-                        await send('bot', '', member.name + ' has '
+                        await send('bot', member.name + ' has '
                                    + str(db.d[member.id + '_p'])
                                    + ' points now!')
             else:
                 await client.send_message(message.channel,
                                           'ERROR: not enough permissions')
         else:
-            await send('bot', '', message.author.mention +
+            await send('bot', message.author.mention +
                        ' You have ' + str(db.d[message.author.id + '_p'])
                        + ' points!')
     except:
@@ -259,12 +260,12 @@ async def debug(message):
     if(perm(message.author, 2)):
         server = client.get_server(config['discord']['serverid'])
         for member in server.members:
-            if (member.game is not None):
-                if (member.game.name == 'Phantasy Star Online 2' and str(member.status) == 'online'):
-                        await send('staff', '', member.name
+            if (member.game is not None and str(member.status) == 'online'):
+                if (member.game.name == 'Phantasy Star Online 2'):
+                        await send('staff', member.name
                                    + ' is playing pso2 - okay')
                 else:
-                    await send('staff', '', member.name + ' is playing '
+                    await send('staff', member.name + ' is playing '
                                + member.game.name)
     else:
         await client.send_message(message.channel,
