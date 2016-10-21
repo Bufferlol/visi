@@ -93,23 +93,26 @@ async def check_lvlup(member):
     veteran = discord.utils.get(server.roles, name='Veteran')
     master = discord.utils.get(server.roles, name='Master')
 
-    if (db.d[member.id+'_p'] >= 1680 and member.top_role == newbie):
-        await client.add_roles(member, rookie)
-        await send('bot', member.mention +
-                   ' Congratulation, you are no longer a Newbie :^)')
-    if (db.d[member.id+'_p'] >= 6300 and member.top_role == rookie):
-        await client.add_roles(member, member_r)
-        await send('bot', member.mention +
-                   ' You leveled up to Member!! ONE OF US ONE OF US')
-    if (db.d[member.id+'_p'] >= 16800 and member.top_role == member_r):
-        await client.add_roles(member, veteran)
-        await send('bot', member.mention +
-                   ' AYY Veteran already!! GRATZ :)')
-    if (db.d[member.id+'_p'] >= 50400 and member.top_role == veteran):
-        await client.add_roles(member, master)
-        await send('bot', member.mention +
-                   ' HOLY SHIT!! A NEW MASTER HAS RISEN! WOOP WOOP PARTY HARD')
-
+    if member.id + '_p' in db.d:
+        if (db.d[member.id+'_p'] >= 1680 and member.top_role == newbie):
+            await client.add_roles(member, rookie)
+            await send('bot', member.mention +
+                    ' Congratulation, you are no longer a Newbie :^)')
+        if (db.d[member.id+'_p'] >= 6300 and member.top_role == rookie):
+            await client.add_roles(member, member_r)
+            await send('bot', member.mention +
+                    ' You leveled up to Member!! ONE OF US ONE OF US')
+        if (db.d[member.id+'_p'] >= 16800 and member.top_role == member_r):
+            await client.add_roles(member, veteran)
+            await send('bot', member.mention +
+                    ' AYY Veteran already!! GRATZ :)')
+        if (db.d[member.id+'_p'] >= 50400 and member.top_role == veteran):
+            await client.add_roles(member, master)
+            await send('bot', member.mention +
+                    ' HOLY SHIT!! A NEW MASTER HAS RISEN! WOOP WOOP PARTY HARD')
+    else:
+        db.d[member.id + '_p'] = 0
+        await sync_db()
 
 async def checkeq():
     try:

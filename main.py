@@ -39,30 +39,29 @@ async def on_member_join(member):
     server = client.get_server(config['discord']['serverid'])
     newbie = discord.utils.get(server.roles, name='Newbie')
     await client.add_roles(member, newbie)
-    await f.send('general', '', member.mention+' Welcome! :)')
+    await f.send('general', member.mention+' Welcome! :)')
 
 
 @client.async_event
 async def on_channel_update(a, b):
-    await f.send('staff', '', 'CH: '+a.name+' Pos: '+str(a.position)+' -> CH: '
+    await f.send('staff', 'CH: '+a.name+' Pos: '+str(a.position)+' -> CH: '
                  + b.name+' Pos: '+str(b.position))
 
 
 @client.async_event
 async def on_channel_create(a):
-    await f.send('staff', '', 'CH: '+a.name+' Pos: '+str(a.position) +
+    await f.send('staff', 'CH: '+a.name+' Pos: '+str(a.position) +
                  ' created.')
-
 
 @client.async_event
 async def on_channel_delete(a):
-    await f.send('staff', '', 'CH: '+a.name+' Pos: '+str(a.position)
+    await f.send('staff', 'CH: '+a.name+' Pos: '+str(a.position)
                  + ' deleted.')
 
 
 @client.async_event
 async def on_member_remove(a):
-    await f.send('staff', '', a.name+' left the server.')
+    await f.send('staff', a.name+' left the server.')
 
 
 @client.async_event
@@ -72,12 +71,12 @@ async def on_member_update(a, b):
     if b.nick is None:
         b.nick = b.name
     if a.nick != b.nick:
-        await f.send('staff', '', a.nick+' -> '+b.nick)
+        await f.send('staff', a.nick+' -> '+b.nick)
 
 
 @client.async_event
 async def on_member_ban(a):
-    await f.send('staff', '', a.name+' got banned.')
+    await f.send('staff', a.name+' got banned.')
 
 client.loop.create_task(main())
 client.loop.create_task(points())
