@@ -1,7 +1,6 @@
 import discord
 import twitter
 import json
-import database as db
 import sys
 import urllib.request
 
