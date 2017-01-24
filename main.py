@@ -2,6 +2,7 @@ import discord
 import json
 import asyncio
 import function as f
+import _mysql
 
 client = discord.Client()
 f.client = client
@@ -9,9 +10,14 @@ f.client = client
 with open('config.json') as data_file:
     config = json.load(data_file)
 
+db=_mysql.connect('localhost', config['db']['user'],config['db']['pw'], config['db']['db'])
+
+db.query("""SELECT server_id, discord_token, yandex_token, twitter_ck, twitter_cs, twitter_tk, twitter_ts FROM config LIMIT 1""")
+
+r=db.store_result().fetchonce()
+
 async def main():
     await client.wait_until_ready()
-    print('1')
     while 1:
         await f.checkeq()
         await f.twitter()
@@ -36,7 +42,7 @@ async def on_message(message):
 
 @client.async_event
 async def on_member_join(member):
-    server = client.get_server(config['discord']['serverid'])
+    server = client.get_server(r['server_id'])
     newbie = discord.utils.get(server.roles, name='Newbie')
     await client.add_roles(member, newbie)
     await f.send('general', member.mention+' Welcome! :)')
@@ -80,4 +86,4 @@ async def on_member_ban(a):
 
 client.loop.create_task(main())
 client.loop.create_task(points())
-client.run(config['discord']['token'])
+client.run(r['discord_token'])
