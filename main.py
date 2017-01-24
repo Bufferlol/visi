@@ -14,7 +14,7 @@ db=_mysql.connect('localhost', config['db']['user'],config['db']['pw'], config['
 
 db.query("""SELECT server_id, discord_token, yandex_token, twitter_ck, twitter_cs, twitter_tk, twitter_ts FROM config LIMIT 1""")
 
-r=db.store_result().fetchonce()
+r=db.store_result().fetchone()
 
 async def main():
     await client.wait_until_ready()
