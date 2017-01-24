@@ -14,7 +14,9 @@ db=_mysql.connect('localhost', config['db']['user'],config['db']['pw'], config['
 
 db.query("""SELECT server_id, discord_token, yandex_token, twitter_ck, twitter_cs, twitter_tk, twitter_ts FROM config LIMIT 1""")
 
-r=db.store_result().fetchone()
+r=db.store_result()
+
+r.fetch_row()
 
 async def main():
     await client.wait_until_ready()
@@ -42,7 +44,7 @@ async def on_message(message):
 
 @client.async_event
 async def on_member_join(member):
-    server = client.get_server(r['server_id'])
+    server = client.get_server(r[0]['server_id'])
     newbie = discord.utils.get(server.roles, name='Newbie')
     await client.add_roles(member, newbie)
     await f.send('general', member.mention+' Welcome! :)')
@@ -86,4 +88,4 @@ async def on_member_ban(a):
 
 client.loop.create_task(main())
 client.loop.create_task(points())
-client.run(r['discord_token'])
+client.run(r[0]['discord_token'])
