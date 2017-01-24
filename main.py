@@ -5,7 +5,7 @@ import asyncio
 import _mysql
 
 client = discord.Client()
-f.client = client
+#f.client = client
 
 with open('config.json') as data_file:
     config = json.load(data_file)
