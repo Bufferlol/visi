@@ -1,7 +1,7 @@
 import discord
 import json
 import asyncio
-import function as f
+#import function as f
 import _mysql
 
 client = discord.Client()
