@@ -17,10 +17,10 @@ global translate
 commands = ['ship', 'points', 'noeqa', 'debug']
 
 def init():
-    #api = twitter.Api(consumer_key = config[3],
-    #                  consumer_secret = config[4],
-    #                  access_token_key = config[5],
-     #                 access_token_secret = config[6])
+    api = twitter.Api(consumer_key = config[3],
+                      consumer_secret = config[4],
+                      access_token_key = config[5],
+                      access_token_secret = config[6])
 
     translate = YandexTranslate(config[2])
 
@@ -44,8 +44,8 @@ def perm(author, perm_lvl):
 async def twitter():
     try:
         statuses = api.GetUserTimeline(screen_name='sega_pso2', count=1)
-        if (statuses[0].id_str != db.d['last_tweet']):
-            db.d['last_tweet'] = statuses[0].id_str
+        if (1):
+            #db.d['last_tweet'] = statuses[0].id_str
             trans = translate.translate(statuses[0].text, 'en')
             post = '*@sega_pso2 just tweeted:* \n\n'
             post += statuses[0].text + '\n'
@@ -54,7 +54,9 @@ async def twitter():
             post += trans['text'][0] + '\n'
             await send('twitter', post)
     except:
-        print(sys.exc_info()[0])
+        await send('staff', 'twitter() failed!')
+        raise sys.exc_info()[0]
+        return 0
 
 
 async def send(chname, msg, mention = None):
@@ -152,7 +154,9 @@ async def checkeq():
             if (count == 0):
                 await send('eqalert', 'None :(')
     except:
-        print(sys.exc_info()[0])
+        await send('staff', 'checkeq() failed!')
+        raise sys.exc_info()[0]
+        return 0
 
 async def sync_db():
     db.d.sync()

@@ -3,7 +3,6 @@ import json
 import asyncio
 import function as f
 import MySQLdb
-from threading import Timer
 
 client = discord.Client()
 f.client = client
@@ -20,23 +19,18 @@ f.config = config
 f.db = db
 f.init()
 
-def start():
-    main()
-    points()
-
 async def main():
     await client.wait_until_ready()
-    t = Timer(60.0, main)
-    t.start()
-    #await f.checkeq()
-    #await f.twitter()
+    print('main')
+    while 1:
+        #await f.checkeq()
+        await f.twitter()
+        await asyncio.sleep(60) 
 
 async def points():
     await client.wait_until_ready()
-    t = Timer(300.0, points)
-    t.start()
-    #await f.check_pso_playing()
-
+    print('points')
+    while 1:        #await f.check_pso_playing()        await asyncio.sleep(300) 
 
 @client.async_event
 async def on_message(message):
@@ -49,7 +43,7 @@ async def on_message(message):
 
 @client.async_event
 async def on_member_join(member):
-    server = client.get_server(r[0]['server_id'])
+    server = client.get_server(config[0])
     newbie = discord.utils.get(server.roles, name='Newbie')
     await client.add_roles(member, newbie)
     await f.send('general', member.mention+' Welcome! :)')
@@ -91,4 +85,6 @@ async def on_member_update(a, b):
 async def on_member_ban(a):
     await f.send('staff', a.name+' got banned.')
 
+client.loop.create_task(main())
+client.loop.create_task(points())
 client.run(config[1])
