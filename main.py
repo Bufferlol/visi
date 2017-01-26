@@ -1,36 +1,41 @@
 import discord
 import json
 import asyncio
-#import function as f
-import _mysql
+import function as f
+import MySQLdb
+from threading import Timer
 
 client = discord.Client()
-#f.client = client
+f.client = client
 
 with open('config.json') as data_file:
     config = json.load(data_file)
 
-db=_mysql.connect('localhost', config['db']['user'],config['db']['pw'], config['db']['db'])
+db = MySQLdb.connect('localhost', config['db']['user'],config['db']['pw'], config['db']['db'])
+cur = db.cursor()
+cur.execute("""SELECT server_id, discord_token, yandex_token, twitter_ck, twitter_cs, twitter_tk, twitter_ts FROM config LIMIT 1""")
+config = cur.fetchall()[0]
 
-db.query("""SELECT server_id, discord_token, yandex_token, twitter_ck, twitter_cs, twitter_tk, twitter_ts FROM config LIMIT 1""")
+f.config = config
+f.db = db
+f.init()
 
-r=db.store_result()
-
-r.fetch_row()
+def start():
+    main()
+    points()
 
 async def main():
     await client.wait_until_ready()
-    while 1:
-        await f.checkeq()
-        await f.twitter()
-        await asyncio.sleep(60)
+    t = Timer(60.0, main)
+    t.start()
+    #await f.checkeq()
+    #await f.twitter()
 
 async def points():
     await client.wait_until_ready()
-    while 1:
-        await f.check_pso_playing()
-        await f.sync_db()
-        await asyncio.sleep(300)
+    t = Timer(300.0, points)
+    t.start()
+    #await f.check_pso_playing()
 
 
 @client.async_event
@@ -86,6 +91,4 @@ async def on_member_update(a, b):
 async def on_member_ban(a):
     await f.send('staff', a.name+' got banned.')
 
-client.loop.create_task(main())
-client.loop.create_task(points())
-client.run(r[0]['discord_token'])
+client.run(config[1])

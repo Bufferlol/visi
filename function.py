@@ -9,18 +9,20 @@ from yandex_translate import YandexTranslate
 
 global client
 global task
+global config
+global db
+global api
+global translate
 
 commands = ['ship', 'points', 'noeqa', 'debug']
 
-with open('config.json') as data_file:
-    config = json.load(data_file)
+def init():
+    #api = twitter.Api(consumer_key = config[3],
+    #                  consumer_secret = config[4],
+    #                  access_token_key = config[5],
+     #                 access_token_secret = config[6])
 
-api = twitter.Api(consumer_key=config['twitter']['consumer_key'],
-                  consumer_secret=config['twitter']['consumer_secret'],
-                  access_token_key=config['twitter']['access_token_key'],
-                  access_token_secret=config['twitter']['access_token_secret'])
-
-translate = YandexTranslate(config['yandex']['token'])
+    translate = YandexTranslate(config[2])
 
 
 async def call(func, msg):
@@ -120,9 +122,9 @@ async def checkeq():
         eq = eq[0]
         eq_time = eq['jst']
         eq_text = eq['text'].splitlines()
-        db.d['eqmention'] = ''
-        if (eq_time != db.d['eq']):
-            db.d['eq'] = eq_time
+        #db.d['eqmention'] = ''
+        if (1): ######
+            #db.d['eq'] = eq_time
             count = 0
             count2 = 0
             await send('eqalert',
