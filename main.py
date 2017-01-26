@@ -24,7 +24,7 @@ async def main():
     print('main')
     while 1:
         #await f.checkeq()
-        await f.twitter()
+        #await f.twitter()
         await asyncio.sleep(60) 
 
 async def points():

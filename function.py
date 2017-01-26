@@ -17,10 +17,10 @@ global translate
 commands = ['ship', 'points', 'noeqa', 'debug']
 
 def init():
-    api = twitter.Api(consumer_key = config[3],
-                      consumer_secret = config[4],
-                      access_token_key = config[5],
-                      access_token_secret = config[6])
+    #api = twitter.Api(consumer_key = config[3],
+    #                  consumer_secret = config[4],
+    #                  access_token_key = config[5],
+    #                  access_token_secret = config[6])
 
     translate = YandexTranslate(config[2])
 
